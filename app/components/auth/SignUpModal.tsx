@@ -8,8 +8,7 @@ import { doc, setDoc, getDoc, writeBatch } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { useDebounce } from 'use-debounce';
 import { CheckCircle, XCircle } from 'lucide-react';
-import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
-import type { Country } from 'libphonenumber-js';
+import { getCountries, getCountryCallingCode, CountryCode } from 'libphonenumber-js';
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -30,7 +29,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
   const [debouncedUsername] = useDebounce(formData.username, 500);
-  const [countries, setCountries] = useState<Country[]>([]);
+  const [countries, setCountries] = useState<CountryCode[]>([]);
 
   useEffect(() => {
     const detectUserCountry = async () => {
@@ -46,7 +45,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
         // Set the detected country code
         setFormData(prev => ({
           ...prev,
-          countryCode: `+${getCountryCallingCode(countryCode as Country)}`
+          countryCode: `+${getCountryCallingCode(countryCode as CountryCode)}`
         }));
 
         // Try to get more precise location if user allows
@@ -63,7 +62,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
                 if (geoData.countryCode) {
                   setFormData(prev => ({
                     ...prev,
-                    countryCode: `+${getCountryCallingCode(geoData.countryCode as Country)}`
+                    countryCode: `+${getCountryCallingCode(geoData.countryCode as CountryCode)}`
                   }));
                 }
               } catch (error) {
@@ -81,7 +80,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
         const fallbackCountry = navigator.language.split('-')[1] || 'US';
         setFormData(prev => ({
           ...prev,
-          countryCode: `+${getCountryCallingCode(fallbackCountry as Country)}`
+          countryCode: `+${getCountryCallingCode(fallbackCountry as CountryCode)}`
         }));
       }
     };
