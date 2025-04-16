@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { auth, db } from '@/lib/firebase';
@@ -6,7 +8,8 @@ import { doc, setDoc, getDoc, writeBatch } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 import { useDebounce } from 'use-debounce';
 import { CheckCircle, XCircle } from 'lucide-react';
-import { getCountries, getCountryCallingCode, Country } from 'libphonenumber-js';
+import { getCountries, getCountryCallingCode } from 'libphonenumber-js';
+import type { Country } from 'libphonenumber-js';
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -43,7 +46,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
         // Set the detected country code
         setFormData(prev => ({
           ...prev,
-          countryCode: `+${getCountryCallingCode(countryCode)}`
+          countryCode: `+${getCountryCallingCode(countryCode as Country)}`
         }));
 
         // Try to get more precise location if user allows
@@ -60,7 +63,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
                 if (geoData.countryCode) {
                   setFormData(prev => ({
                     ...prev,
-                    countryCode: `+${getCountryCallingCode(geoData.countryCode)}`
+                    countryCode: `+${getCountryCallingCode(geoData.countryCode as Country)}`
                   }));
                 }
               } catch (error) {
@@ -78,7 +81,7 @@ export default function SignUpModal({ isOpen, onClose }: SignUpModalProps) {
         const fallbackCountry = navigator.language.split('-')[1] || 'US';
         setFormData(prev => ({
           ...prev,
-          countryCode: `+${getCountryCallingCode(fallbackCountry)}`
+          countryCode: `+${getCountryCallingCode(fallbackCountry as Country)}`
         }));
       }
     };
